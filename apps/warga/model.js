@@ -60,6 +60,6 @@ let wargaSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Keluarga",
   }
-});
+}, {timestamps: true});
 
 module.exports = mongoose.model('Warga', wargaSchema);

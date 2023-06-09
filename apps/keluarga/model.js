@@ -33,7 +33,7 @@ let keluargaSchema = mongoose.Schema(
       },
     ],
   },
-  { timeStamps: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Keluarga", keluargaSchema);

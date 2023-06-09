@@ -57,8 +57,7 @@ let wargaSchema = mongoose.Schema({
     ref: "RT",
   },
   tokenKeluarga: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Keluarga",
+    type: String,
   }
 }, {timestamps: true});
 

@@ -4,6 +4,7 @@ const { secretKey } = require("../../config/index");
 const bcrypt = require("bcrypt");
 const Warga = require("../warga/model");
 const { errorHandling } = require("../middleware/errorHandling");
+const {randomUUID} = require('crypto')
 
 exports.authenticateJWT = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -66,8 +67,21 @@ exports.signUp = async (req, res, next) => {
     });
 
     await warga.save();
+    const uuid = randomUUID();
+    console.log(uuid)
 
-    res.status(201).json({ message: "Akun Warga Dibuat", data: warga });
+    if (familyRole === "Kepala Keluarga" || familyRole === "kepala keluarga") {
+      res.status(201).json({
+        message: "Akun Warga Dibuat",
+        tokenKeluarga: uuid,
+        data: warga,
+      });
+    } else {
+      res.status(201).json({
+        message: "Akun Warga Dibuat",
+        data: warga,
+      });
+    }
   } catch (error) {
     errorHandling(error);
     next(error);
@@ -75,42 +89,39 @@ exports.signUp = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
-    const { email, password } = req.body;
-    let user;
-  
-    try {
-        const warga = await Warga.findOne({ email: email });
-  
-        if (!warga) {
-          const error = new Error('Wrong email.');
-          error.statusCode = 401;
-          throw error;
-        }
-  
-        user = warga;
-        const truePassword = await bcrypt.compare(password, user.password);
-  
-        if (!truePassword) {
-          const error = new Error('Wrong password.');
-          error.statusCode = 401;
-          throw error;
-        }
-  
-        const token = jwt.sign(
-          {
-            email: user.email,
-            password: user.password,
-          },
-          process.env.SECRET_KEY,
-          { expiresIn: '3h' }
-        );
-  
-        res
-          .status(200)
-          .json({ message: 'Login Keluarga Berhasil', token: token });
-    } catch (error) {
-      errorHandling(error);
-      next(error);
+  const { email, password } = req.body;
+  let user;
+
+  try {
+    const warga = await Warga.findOne({ email: email });
+
+    if (!warga) {
+      const error = new Error("Wrong email.");
+      error.statusCode = 401;
+      throw error;
     }
-  };
-  
+
+    user = warga;
+    const truePassword = await bcrypt.compare(password, user.password);
+
+    if (!truePassword) {
+      const error = new Error("Wrong password.");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const token = jwt.sign(
+      {
+        email: user.email,
+        password: user.password,
+      },
+      process.env.SECRET_KEY,
+      { expiresIn: "3h" }
+    );
+
+    res.status(200).json({ message: "Login Keluarga Berhasil", token: token });
+  } catch (error) {
+    errorHandling(error);
+    next(error);
+  }
+};

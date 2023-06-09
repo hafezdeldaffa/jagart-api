@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 let rtSchema = mongoose.Schema(
   {
     nomorRT: {
-      type: String,
+      type: Number,
       require: [true, "Nomor RT diisi!"],
     },
     nomorRW: {
-      type: String,
+      type: Number,
       require: [true, "Nomor RW harus diisi!"],
     },
     activeStatus: {
@@ -17,10 +17,6 @@ let rtSchema = mongoose.Schema(
         message: "{VALUE} tidak didukung",
       },
       default: "Y",
-    },
-    phoneNumber: {
-      type: String,
-      require: [true, "Nomor telepon harus diisi!"],
     },
     address: {
       type: String,

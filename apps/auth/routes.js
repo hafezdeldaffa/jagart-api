@@ -1,5 +1,5 @@
 const express = require("express");
-const { signUp } = require("./controller");
+const { signUp, login } = require("./controller");
 const router = express.Router();
 const { body } = require("express-validator");
 const Warga = require("../warga/model");
@@ -24,5 +24,7 @@ router.post(
   ],
   signUp
 );
+
+router.post('/login', login);
 
 module.exports = router;

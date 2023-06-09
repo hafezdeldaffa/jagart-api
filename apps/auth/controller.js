@@ -2,9 +2,8 @@ const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const { secretKey } = require("../../config/index");
 const bcrypt = require("bcrypt");
-const RT = require("../rt/model");
 const Warga = require("../warga/model");
-const {errorHandling} = require('../middleware/errorHandling')
+const { errorHandling } = require("../middleware/errorHandling");
 
 exports.authenticateJWT = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -68,13 +67,50 @@ exports.signUp = async (req, res, next) => {
 
     await warga.save();
 
-    res
-      .status(201)
-      .json({ message: "Akun Warga Dibuat", data: warga });
+    res.status(201).json({ message: "Akun Warga Dibuat", data: warga });
   } catch (error) {
     errorHandling(error);
     next(error);
   }
 };
 
-
+exports.login = async (req, res, next) => {
+    const { email, password } = req.body;
+    let user;
+  
+    try {
+        const warga = await Warga.findOne({ email: email });
+  
+        if (!warga) {
+          const error = new Error('Wrong email.');
+          error.statusCode = 401;
+          throw error;
+        }
+  
+        user = warga;
+        const truePassword = await bcrypt.compare(password, user.password);
+  
+        if (!truePassword) {
+          const error = new Error('Wrong password.');
+          error.statusCode = 401;
+          throw error;
+        }
+  
+        const token = jwt.sign(
+          {
+            email: user.email,
+            password: user.password,
+          },
+          process.env.SECRET_KEY,
+          { expiresIn: '3h' }
+        );
+  
+        res
+          .status(200)
+          .json({ message: 'Login Keluarga Berhasil', token: token });
+    } catch (error) {
+      errorHandling(error);
+      next(error);
+    }
+  };
+  

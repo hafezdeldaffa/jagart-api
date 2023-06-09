@@ -1,10 +1,14 @@
 const mongoose = require("mongoose");
 
-let keluargaSchema = mongoose.Schema(
+let rtSchema = mongoose.Schema(
   {
-    name: {
+    nomorRT: {
       type: String,
-      require: [true, "Nama Keluarga harus diisi!"],
+      require: [true, "Nomor RT diisi!"],
+    },
+    nomorRW: {
+      type: String,
+      require: [true, "Nomor RW harus diisi!"],
     },
     activeStatus: {
       type: String,
@@ -22,11 +26,19 @@ let keluargaSchema = mongoose.Schema(
       type: String,
       require: [true, "Alamat harus diisi!"],
     },
-    homeNumber: {
+    province: {
       type: String,
-      require: [true, "Nomor Rumah harus diisi!"],
+      require: [true, "Provinsi harus diisi!"],
     },
-    familyMembers: [
+    city: {
+      type: String,
+      require: [true, "Provinsi harus diisi!"],
+    },
+    zipCode: {
+      type: Number,
+      require: [true, "Kode Pos harus diisi!"],
+    },
+    member: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Warga",
@@ -36,4 +48,4 @@ let keluargaSchema = mongoose.Schema(
   { timeStamps: true }
 );
 
-module.exports = mongoose.model("Keluarga", keluargaSchema);
+module.exports = mongoose.model("RT", rtSchema);

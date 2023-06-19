@@ -67,6 +67,13 @@ exports.signUp = async (req, res, next) => {
     });
 
     await warga.save();
+
+    if (tokenRT) {
+      const dataRT = await RT.findById(tokenRT);
+      dataRT.member.push(warga);
+      await dataRT.save();  
+    }
+
     const uuid = randomUUID();
     console.log(uuid)
 

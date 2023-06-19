@@ -4,7 +4,8 @@ const { secretKey } = require("../../config/index");
 const bcrypt = require("bcrypt");
 const Warga = require("../warga/model");
 const { errorHandling } = require("../middleware/errorHandling");
-const {randomUUID} = require('crypto')
+const { randomUUID } = require("crypto");
+const RT = require("../rt/model");
 
 exports.authenticateJWT = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -66,24 +67,27 @@ exports.signUp = async (req, res, next) => {
       tokenKeluarga: tokenKeluarga,
     });
 
-    await warga.save();
-
     if (tokenRT) {
       const dataRT = await RT.findById(tokenRT);
       dataRT.member.push(warga);
-      await dataRT.save();  
+      await dataRT.save();
     }
 
     const uuid = randomUUID();
-    console.log(uuid)
+    console.log(uuid);
 
     if (familyRole === "Kepala Keluarga" || familyRole === "kepala keluarga") {
+      warga.tokenKeluarga = uuid;
+      await warga.save();
+
       res.status(201).json({
         message: "Akun Warga Dibuat",
-        tokenKeluarga: uuid,
+        tokenKeluarga: warga.tokenKeluarga,
         data: warga,
       });
     } else {
+      await warga.save();
+
       res.status(201).json({
         message: "Akun Warga Dibuat",
         data: warga,

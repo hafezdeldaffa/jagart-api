@@ -34,6 +34,10 @@ let rtSchema = mongoose.Schema(
       type: Number,
       require: [true, "Kode Pos harus diisi!"],
     },
+    ketuaRT: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Warga",
+    },
     member: [
       {
         type: mongoose.Schema.Types.ObjectId,

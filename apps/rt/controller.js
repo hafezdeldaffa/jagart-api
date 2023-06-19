@@ -25,18 +25,6 @@ exports.createRT = async (req, res, next) => {
       member,
     } = req.body;
 
-    // /* Get data from jwt */
-    // const { email } = req.user;
-
-    // /* Find data keluarga by email */
-    // const warga = await Warga.findOne({ email: email });
-
-    // if (warga.tokenRT) {
-    //   const error = new Error("Tidak bisa membuat RT, anda sudah memiliki RT!");
-    //   error.statusCode = 500;
-    //   throw err;
-    // }
-
     /* Create new RT */
     const newRT = new RT({
       nomorRT: nomorRT,

@@ -1,4 +1,4 @@
-const { validationResult, check } = require("express-validator");
+const { validationResult } = require("express-validator");
 const { errorHandling } = require("../middleware/errorHandling");
 const RT = require("./model");
 const Warga = require("../warga/model");

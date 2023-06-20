@@ -1,16 +1,17 @@
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const helmet = require("helmet");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+const indexRouter = require("./routes/index");
 const authRouter = require("./apps/auth/routes");
 const rtRouter = require("./apps/rt/routes");
-const helmet = require("helmet");
+const wargaRouter = require('./apps/warga/routes');
+
 const URL = `/api/v1`;
 
-var app = express();
+const app = express();
 
 app.use(logger("dev"));
 app.use(express.json());
@@ -40,8 +41,8 @@ app.use((req, res, next) => {
 });
 
 app.use(`${URL}/`, indexRouter);
-app.use(`${URL}/users`, usersRouter);
 app.use(`${URL}/auth`, authRouter);
 app.use(`${URL}`, rtRouter);
+app.use(`${URL}`, wargaRouter);
 
 module.exports = app;

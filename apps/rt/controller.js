@@ -2,6 +2,7 @@ const { validationResult } = require("express-validator");
 const { errorHandling } = require("../middleware/errorHandling");
 const RT = require("./model");
 const Warga = require("../warga/model");
+const { errorResponse } = require("../middleware/errorResponse");
 
 exports.createRT = async (req, res, next) => {
   try {
@@ -58,33 +59,25 @@ exports.editRT = async (req, res, next) => {
     /* Creating validation */
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const error = new Error("Validation error, entered data is incorrect");
-      error.statusCode = 422;
-      throw err;
+      errorResponse(422, "Validation error, data yang anda masukan salah");
     }
 
     /* Get data from request session */
     const { email } = req.user;
     const checkWarga = await Warga.findOne({ email: email });
     if (!checkWarga) {
-      const error = new Error("Email tidak ditemukan");
-      error.statusCode = 404;
-      throw error;
+      errorResponse(404, "Warga tidak ditemukan");
     }
 
     /* Check if the user is the ketuaRT */
     const { tokenRT } = req.params;
     const rt = await RT.findById(tokenRT);
     if (!rt) {
-      const error = new Error("RT tidak ditemukan");
-      error.statusCode = 404;
-      throw error;
+      errorResponse(404, "RT tidak ditemukan");
     }
 
     if (rt.ketuaRT.toString() !== checkWarga._id.toString()) {
-      const error = new Error("Anda bukan ketua RT");
-      error.statusCode = 401;
-      throw error;
+      errorResponse(401, "Anda bukan ketua RT");
     }
 
     /* Edit RT Data */
@@ -122,9 +115,7 @@ exports.getRT = async (req, res, next) => {
     /* Creating validation */
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const error = new Error("Validation error, entered data is incorrect");
-      error.statusCode = 422;
-      throw err;
+      errorResponse(422, "Validation error, data yang anda masukan salah");
     }
 
     /* Get data from request params */
@@ -136,9 +127,7 @@ exports.getRT = async (req, res, next) => {
       .populate("member", "name email phoneNumber address");
 
     if (!rt) {
-      const error = new Error("RT tidak ditemukan");
-      error.statusCode = 404;
-      throw error;
+      errorResponse(404, "RT tidak ditemukan");
     }
 
     /* Send response */
@@ -158,9 +147,7 @@ exports.deleteRT = async (req, res, next) => {
     /* Creating validation */
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const error = new Error("Validation error, entered data is incorrect");
-      error.statusCode = 422;
-      throw err;
+      errorResponse(422, "Validation error, data yang anda masukan salah");
     }
 
     /* Get data from jwt */
@@ -172,9 +159,7 @@ exports.deleteRT = async (req, res, next) => {
     /* Find RT */
     const rt = await RT.findById(tokenRT);
     if (!rt) {
-      res.status(404).json({
-        message: "RT tidak ditemukan",
-      });
+      errorResponse(404, "RT tidak ditemukan");
     }
 
     /* Find Warga */
@@ -182,17 +167,12 @@ exports.deleteRT = async (req, res, next) => {
 
     /* Check if the RT has ketuaRT */
     if (!rt.ketuaRT) {
-      res.status(404).json({
-        message:
-          "RT Anda tidak memiliki ketua RT, harap pilih seseorang sebagai RT",
-      });
+      errorResponse(404, "RT tidak memiliki ketua RT");
     }
 
     /* Check if the user is the ketuaRT */
     if (rt.ketuaRT.toString() !== checkWarga._id.toString()) {
-      res.status(401).json({
-        message: "Anda bukan ketua RT",
-      });
+      errorResponse(401, "Anda bukan ketua RT");
     }
 
     /* Delete RT */
@@ -214,9 +194,7 @@ exports.createKetuaRT = async (req, res, next) => {
     /* Creating validation */
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const error = new Error("Validation error, entered data is incorrect");
-      error.statusCode = 422;
-      throw err;
+      errorResponse(422, "Validation error, data yang anda masukan salah");
     }
 
     /* Get data from request body */
@@ -225,17 +203,13 @@ exports.createKetuaRT = async (req, res, next) => {
     /* Find RT */
     const rt = await RT.findById(tokenRT);
     if (!rt) {
-      res.status(404).json({
-        message: "RT tidak ditemukan",
-      });
+      errorResponse(404, "RT tidak ditemukan");
     }
 
     /* Create new RT */
     const ketuaRT = await Warga.findOne({ email: email });
     if (!ketuaRT) {
-      res.status(404).json({
-        message: "Email tidak ditemukan",
-      });
+      errorResponse(404, "Warga tidak ditemukan");
     }
 
     // const member = await Warga.find({ tokenRT: tokenRT });

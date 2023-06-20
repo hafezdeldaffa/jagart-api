@@ -117,6 +117,42 @@ exports.editRT = async (req, res, next) => {
   }
 };
 
+exports.getRT = async (req, res, next) => {
+  try {
+    /* Creating validation */
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation error, entered data is incorrect");
+      error.statusCode = 422;
+      throw err;
+    }
+
+    /* Get data from request params */
+    const { tokenRT } = req.params;
+
+    /* Find RT */
+    const rt = await RT.findById(tokenRT)
+      .populate("ketuaRT", "name email phoneNumber address")
+      .populate("member", "name email phoneNumber address");
+
+    if (!rt) {
+      const error = new Error("RT tidak ditemukan");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    /* Send response */
+    res.status(200).json({
+      message: "RT Anda Berhasil Ditemukan",
+      data: rt,
+    });
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};
+
 exports.createKetuaRT = async (req, res, next) => {
   try {
     /* Creating validation */

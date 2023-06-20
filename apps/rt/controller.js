@@ -1,4 +1,4 @@
-const { validationResult } = require("express-validator");
+const { validationResult, check } = require("express-validator");
 const { errorHandling } = require("../middleware/errorHandling");
 const RT = require("./model");
 const Warga = require("../warga/model");
@@ -145,6 +145,63 @@ exports.getRT = async (req, res, next) => {
     res.status(200).json({
       message: "RT Anda Berhasil Ditemukan",
       data: rt,
+    });
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};
+
+exports.deleteRT = async (req, res, next) => {
+  try {
+    /* Creating validation */
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation error, entered data is incorrect");
+      error.statusCode = 422;
+      throw err;
+    }
+
+    /* Get data from jwt */
+    const { email } = req.user;
+
+    /* Get data from request params */
+    const { tokenRT } = req.params;
+
+    /* Find RT */
+    const rt = await RT.findById(tokenRT);
+    if (!rt) {
+      const error = new Error("RT tidak ditemukan");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    /* Find Warga */
+    const checkWarga = await Warga.findOne({ email: email });
+
+    /* Check if the RT has ketuaRT */
+    if (!rt.ketuaRT) {
+      const error = new Error(
+        "Harap pilih seseorang sebagai Ketua RT terlebih dahulu"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+
+    /* Check if the user is the ketuaRT */
+    if (rt.ketuaRT.toString() !== checkWarga._id.toString()) {
+      const error = new Error("Anda bukan ketua RT");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    /* Delete RT */
+    await RT.findByIdAndRemove(tokenRT);
+
+    /* Send response */
+    res.status(200).json({
+      message: "RT Anda Berhasil Dihapus",
     });
   } catch (error) {
     /* Handling Errors */

@@ -172,9 +172,9 @@ exports.deleteRT = async (req, res, next) => {
     /* Find RT */
     const rt = await RT.findById(tokenRT);
     if (!rt) {
-      const error = new Error("RT tidak ditemukan");
-      error.statusCode = 404;
-      throw error;
+      res.status(404).json({
+        message: "RT tidak ditemukan",
+      });
     }
 
     /* Find Warga */
@@ -182,18 +182,17 @@ exports.deleteRT = async (req, res, next) => {
 
     /* Check if the RT has ketuaRT */
     if (!rt.ketuaRT) {
-      const error = new Error(
-        "Harap pilih seseorang sebagai Ketua RT terlebih dahulu"
-      );
-      error.statusCode = 401;
-      throw error;
+      res.status(404).json({
+        message:
+          "RT Anda tidak memiliki ketua RT, harap pilih seseorang sebagai RT",
+      });
     }
 
     /* Check if the user is the ketuaRT */
     if (rt.ketuaRT.toString() !== checkWarga._id.toString()) {
-      const error = new Error("Anda bukan ketua RT");
-      error.statusCode = 401;
-      throw error;
+      res.status(401).json({
+        message: "Anda bukan ketua RT",
+      });
     }
 
     /* Delete RT */
@@ -226,26 +225,29 @@ exports.createKetuaRT = async (req, res, next) => {
     /* Find RT */
     const rt = await RT.findById(tokenRT);
     if (!rt) {
-      const error = new Error("RT tidak ditemukan");
-      error.statusCode = 404;
-      throw error;
+      res.status(404).json({
+        message: "RT tidak ditemukan",
+      });
     }
 
     /* Create new RT */
     const ketuaRT = await Warga.findOne({ email: email });
     if (!ketuaRT) {
-      const error = new Error("Email tidak ditemukan");
-      error.statusCode = 404;
-      throw error;
+      res.status(404).json({
+        message: "Email tidak ditemukan",
+      });
     }
 
     // const member = await Warga.find({ tokenRT: tokenRT });
 
     /* Save to db */
-    const updatedKetuaRT = await RT.findById(tokenRT);
-    updatedKetuaRT.ketuaRT = ketuaRT._id;
-    // updatedKetuaRT.member = member;
-    await updatedKetuaRT.save();
+    const updatedRT = await RT.findById(tokenRT);
+    updatedRT.ketuaRT = ketuaRT._id;
+    ketuaRT.role = "RT";
+    ketuaRT.tokenRT = tokenRT;
+
+    await ketuaRT.save();
+    await updatedRT.save();
 
     const dataRT = await RT.findById(tokenRT)
       .populate("ketuaRT", "name email phoneNumber address")

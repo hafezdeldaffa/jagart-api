@@ -67,31 +67,45 @@ exports.signUp = async (req, res, next) => {
       tokenKeluarga: tokenKeluarga,
     });
 
-    if (tokenRT) {
-      const dataRT = await RT.findById(tokenRT);
-      dataRT.member.push(warga);
-      await dataRT.save();
-    }
+    if (role === "RT") {
+      const checkRT = await RT.findOne({ _id: tokenRT });
 
-    const uuid = randomUUID();
-    console.log(uuid);
-
-    if (familyRole === "Kepala Keluarga" || familyRole === "kepala keluarga") {
-      warga.tokenKeluarga = uuid;
-      await warga.save();
-
-      res.status(201).json({
-        message: "Akun Warga Dibuat",
-        tokenKeluarga: warga.tokenKeluarga,
-        data: warga,
-      });
+      if (checkRT.ketuaRT !== null) {
+        res.status(401).json({
+          message:
+            "RT anda sudah memiliki ketua RT, harap mendaftar dengan role Warga",
+        });
+      }
     } else {
-      await warga.save();
+      if (tokenRT) {
+        const dataRT = await RT.findById(tokenRT);
+        dataRT.member.push(warga);
+        await dataRT.save();
+      }
 
-      res.status(201).json({
-        message: "Akun Warga Dibuat",
-        data: warga,
-      });
+      const uuid = randomUUID();
+      console.log(uuid);
+
+      if (
+        familyRole === "Kepala Keluarga" ||
+        familyRole === "kepala keluarga"
+      ) {
+        warga.tokenKeluarga = uuid;
+        await warga.save();
+
+        res.status(201).json({
+          message: "Akun Warga Dibuat",
+          tokenKeluarga: warga.tokenKeluarga,
+          data: warga,
+        });
+      } else {
+        await warga.save();
+
+        res.status(201).json({
+          message: "Akun Warga Dibuat",
+          data: warga,
+        });
+      }
     }
   } catch (error) {
     errorHandling(error);

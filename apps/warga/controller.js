@@ -110,3 +110,42 @@ exports.editWarga = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.deleteWarga = async (req, res, next) => {
+  try {
+    /* Creating validation */
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Validation error, entered data is incorrect");
+      error.statusCode = 422;
+      throw err;
+    }
+
+    /* Get data from jwt */
+    const email = req.user.email;
+
+    /* Find Warga */
+    const warga = await Warga.findOne({ email: email });
+
+    if (warga.role === "RT") {
+      /* Get data from params */
+      const { id } = req.params;
+
+      /* Find Warga */
+      await Warga.findByIdAndRemove(id);
+
+      /* Send response */
+      res.status(200).json({
+        message: "Data Anda Berhasil Dihapus",
+      });
+    } else {
+      res.status(401).json({
+        message: "Anda tidak memiliki akses untuk menghapus data ini",
+      });
+    }
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};

@@ -7,14 +7,16 @@ const {
   editKeuangan,
   getKeuangan,
   deleteKeuangan,
-  getTotalKeuangan,
   getKeuanganByType,
   getKeuanganByCategory,
-  getKeuanganByDate,
+
 } = require("./controller");
 
 routes.post("/keuangan", authenticateJWT, createKeuangan);
 routes.put("/keuangan/:id", authenticateJWT, editKeuangan);
 routes.delete("/keuangan/:id", authenticateJWT, deleteKeuangan);
+routes.get("/keuangan", authenticateJWT, getKeuangan);
+routes.get("/keuangan/type/:type", authenticateJWT, getKeuanganByType);
+routes.get("/keuangan/category", authenticateJWT, getKeuanganByCategory);
 
 module.exports = routes;

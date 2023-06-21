@@ -119,12 +119,6 @@ exports.editKeuangan = async (req, res, next) => {
 
 exports.deleteKeuangan = async (req, res, next) => {
   try {
-    /* Creating validation */
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      errorResponse(422, "Validation error, data yang anda masukan salah", res);
-    }
-
     /* Get data from jwt */
     const email = req.user.email;
 
@@ -151,6 +145,119 @@ exports.deleteKeuangan = async (req, res, next) => {
     /* Send response */
     res.status(200).json({
       message: `Data Keuangan dengan id: ${id} Berhasil Dihapus`,
+    });
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};
+
+exports.getKeuangan = async (req, res, next) => {
+  try {
+    /* Get data from jwt */
+    const email = req.user.email;
+
+    /* Find Warga */
+    const warga = await Warga.find({ email: email }).select("tokenRT");
+
+    /* Find Keuangan */
+    const keuangan = await Keuangan.find({ tokenRT: warga[0].tokenRT });
+
+    /* Send response */
+    res.status(200).json({
+      message: "Data Keuangan Berhasil Ditemukan",
+      data: keuangan,
+    });
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};
+
+exports.getKeuanganByType = async (req, res, next) => {
+  try {
+    const type = req.params.type;
+
+    /* Get data from jwt */
+    const email = req.user.email;
+
+    /* Find Warga */
+    const warga = await Warga.find({ email: email }).select("tokenRT");
+
+    const typeCapitalize = type.charAt(0).toUpperCase() + type.slice(1);
+
+    /* Find Keuangan */
+    const keuangan = await Keuangan.find({
+      tokenRT: warga[0].tokenRT,
+      type: typeCapitalize,
+    });
+
+    // find and sum the totalAmount by type where type is Pemasukan or Pengeluaran
+    const totalAmount = await Keuangan.aggregate([
+      { $match: { type: typeCapitalize, tokenRT: warga[0].tokenRT } },
+      {
+        $group: {
+          _id: `${typeCapitalize}`,
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    /* Send response */
+    res.status(200).json({
+      message: `Data Keuangan ${type} Berhasil Ditemukan`,
+      totalAmount: totalAmount,
+      data: keuangan,
+    });
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};
+
+exports.getKeuanganByCategory = async (req, res, next) => {
+  try {
+    const { category } = req.query;
+
+    /* Get data from jwt */
+    const email = req.user.email;
+
+    /* Find Warga */
+    const warga = await Warga.find({ email: email }).select("tokenRT");
+
+    // const categoryCapitalize =
+    //   category.charAt(0).toUpperCase() + category.slice(1);
+
+    /* Find Keuangan */
+    const keuangan = await Keuangan.find({
+      tokenRT: warga[0].tokenRT,
+      category: { $regex: category, $options: "i" },
+    });
+
+    // find and sum the totalAmount by type where type is Pemasukan or Pengeluaran
+    const totalAmount = await Keuangan.aggregate([
+      {
+        $match: {
+          category: { $regex: category, $options: "i" },
+          tokenRT: warga[0].tokenRT,
+        },
+      },
+      {
+        $group: {
+          _id: `${category}`,
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    /* Send response */
+    res.status(200).json({
+      message: `Data Keuangan ${category} Berhasil Ditemukan`,
+      totalAmount: totalAmount,
+      data: keuangan,
     });
   } catch (error) {
     /* Handling Errors */

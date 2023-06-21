@@ -7,7 +7,8 @@ const helmet = require("helmet");
 const indexRouter = require("./routes/index");
 const authRouter = require("./apps/auth/routes");
 const rtRouter = require("./apps/rt/routes");
-const wargaRouter = require('./apps/warga/routes');
+const wargaRouter = require("./apps/warga/routes");
+const keuanganRouter = require("./apps/keuangan/routes");
 
 const URL = `/api/v1`;
 
@@ -22,7 +23,6 @@ app.use(helmet());
 
 // Error Handling Middleware
 app.use((error, req, res, next) => {
-  console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
@@ -44,5 +44,6 @@ app.use(`${URL}/`, indexRouter);
 app.use(`${URL}/auth`, authRouter);
 app.use(`${URL}`, rtRouter);
 app.use(`${URL}`, wargaRouter);
+app.use(`${URL}`, keuanganRouter);
 
 module.exports = app;

@@ -10,6 +10,7 @@ const rtRouter = require("./apps/rt/routes");
 const wargaRouter = require("./apps/warga/routes");
 const keuanganRouter = require("./apps/keuangan/routes");
 const laporanRouter = require("./apps/laporan/routes");
+const kegiatanRouter = require("./apps/kegiatan/routes");
 
 const URL = `/api/v1`;
 
@@ -47,5 +48,6 @@ app.use(`${URL}`, rtRouter);
 app.use(`${URL}`, wargaRouter);
 app.use(`${URL}`, keuanganRouter);
 app.use(`${URL}`, laporanRouter);
+app.use(`${URL}`, kegiatanRouter);
 
 module.exports = app;

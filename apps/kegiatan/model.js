@@ -1,28 +1,27 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const laporanSchema = new Schema(
+const kegiatanSchema = new Schema(
   {
-    category: {
-      type: String,
-      required: true,
-      enum: {
-        values: ["keamanan", "kesehatan", "lainnya"],
-        message: "{VALUE} tidak didukung",
-      },
-      default: "lainnya",
-    },
     title: {
       type: String,
       required: true,
     },
-    date: {
-      type: Date,
-      required: true,
-    },
     description: {
       type: String,
-      required: true,
+      require: true,
+    },
+    date: {
+      type: Date,
+      require: true,
+    },
+    category: {
+      type: String,
+      enum: {
+        values: ["sosial", "pendidikan", "keagamaan", "olahraga", "lainnya"],
+        message: "{VALUE} tidak didukung",
+      },
+      default: "lainnya",
     },
     tokenRT: {
       type: mongoose.Schema.Types.ObjectId,
@@ -36,4 +35,4 @@ const laporanSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Laporan", laporanSchema);
+module.exports = mongoose.model("Kegiatan", kegiatanSchema);

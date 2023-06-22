@@ -80,7 +80,7 @@ exports.editKegiatan = async (req, res, next) => {
       errorResponse(404, "Data Kegiatan tidak ditemukan", res);
     }
 
-    if (kegiatan.tokenWarga.toString() !== warga._id.toString()) {
+    if (warga.role === "Warga") {
       errorResponse(
         401,
         "Anda tidak memiliki akses untuk mengubah data ini",
@@ -106,6 +106,40 @@ exports.editKegiatan = async (req, res, next) => {
     res.status(201).json({
       message: `Data Laporan Berhasil Diubah`,
       data: updatedKegiatan,
+    });
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};
+
+exports.deleteKegiatan = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const { email } = req.user;
+
+    const warga = await Warga.findOne({ email: email });
+
+    const kegiatan = await Kegiatan.findById(id);
+
+    if (!kegiatan) {
+      errorResponse(404, "Data Kegiatan tidak ditemukan", res);
+    }
+
+    if (warga.role === "Warga") {
+      errorResponse(
+        401,
+        "Anda tidak memiliki akses untuk menghapus data ini",
+        res
+      );
+    }
+
+    await Kegiatan.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: `Data Laporan dengan id: ${id} Berhasil Dihapus`,
     });
   } catch (error) {
     /* Handling Errors */

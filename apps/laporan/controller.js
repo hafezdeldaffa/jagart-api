@@ -190,6 +190,10 @@ exports.deleteLaporan = async (req, res, next) => {
 
     const laporan = await Laporan.findById(id);
 
+    if (!laporan) {
+      errorResponse(404, "Data Laporan tidak ditemukan", res);
+    }
+
     if (laporan.tokenWarga !== warga._id) {
       errorResponse(
         401,

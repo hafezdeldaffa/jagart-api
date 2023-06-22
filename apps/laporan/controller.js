@@ -170,7 +170,7 @@ exports.getLaporanByCategory = async (req, res, next) => {
 
     /* Send response */
     res.status(200).json({
-      message: `Data Keuangan ${category} Berhasil Ditemukan`,
+      message: `Data Laporan ${category} Berhasil Ditemukan`,
       data: laporan,
     });
   } catch (error) {

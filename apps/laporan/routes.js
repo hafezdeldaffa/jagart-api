@@ -10,7 +10,7 @@ const {
 } = require("./controller");
 
 routes.post("/laporan", authenticateJWT, createLaporan);
-// routes.put("/laporan/:id", authenticateJWT, editLaporan);
+routes.put("/laporan/:id", authenticateJWT, editLaporan);
 // routes.delete("/laporan/:id", authenticateJWT, deleteLaporan);
 // routes.get("/laporan", authenticateJWT, getLaporan);
 // routes.get("/laporan/category", authenticateJWT, getLaporanByCategory);

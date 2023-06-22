@@ -1,7 +1,6 @@
 const express = require("express");
 const routes = express.Router();
 const { authenticateJWT } = require("../auth/controller");
-const { body } = require("express-validator");
 const {
   createKeuangan,
   editKeuangan,
@@ -9,7 +8,6 @@ const {
   deleteKeuangan,
   getKeuanganByType,
   getKeuanganByCategory,
-
 } = require("./controller");
 
 routes.post("/keuangan", authenticateJWT, createKeuangan);

@@ -193,6 +193,8 @@ exports.deleteLaporan = async (req, res, next) => {
       tokenWarga: warga._id,
     });
 
+    console.log(laporan)
+
     if (!laporan) {
       errorResponse(404, "Data laporan tidak ditemukan", res);
     }

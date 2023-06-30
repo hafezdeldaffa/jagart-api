@@ -7,7 +7,10 @@
 var app = require('../app');
 var debug = require('debug')('jagart-api:server');
 var http = require('http');
+<<<<<<< HEAD
 const db = require("../db");
+=======
+>>>>>>> dcc2fb30a6b5215525f8be554c59fbad9200275a
 
 /**
  * Get port from environment and store in Express.
@@ -26,6 +29,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
+<<<<<<< HEAD
 db.on("error", (err) => {
   console.log("Connection error: cannot connect to mongo db atlas");
 });
@@ -39,6 +43,11 @@ db.on("open", () => {
   server.on("listening", onListening);
 });
 
+=======
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+>>>>>>> dcc2fb30a6b5215525f8be554c59fbad9200275a
 
 /**
  * Normalize a port into a number, string, or false.

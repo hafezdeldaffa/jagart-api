@@ -46,7 +46,7 @@ exports.getWargaByName = async (req, res, next) => {
     }
 
     /* Get data from request body */
-    const { name } = req.body;
+    const { name } = req.params;
 
     /* Find Warga */
     const warga = await Warga.find({
@@ -165,6 +165,35 @@ exports.deleteWarga = async (req, res, next) => {
     } else {
       errorResponse(401, "Anda tidak memiliki akses untuk menghapus data");
     }
+  } catch (error) {
+    /* Handling Errors */
+    errorHandling(error);
+    next(error);
+  }
+};
+
+exports.getStatusCovidWarga = async (req, res, next) => {
+  try {
+    /* Get data from jwt */
+    const email = req.user.email;
+
+    /* Get data from request params */
+    const warga = await Warga.findOne({ email: email });
+
+    const statusCovid = await Warga.find({
+      tokenRT: warga.tokenRT,
+      covidStatus: "Positive",
+    }).select("name familyRole covidStatus activeStatus phoneNumber address");
+
+    if (statusCovid) {
+      res.status(200).json({
+        message: "Data Warga di RT Anda Berhasil Ditemukan",
+        data: statusCovid,
+      });
+    }
+
+    /* Send response */
+    errorResponse(404, "Data Warga di RT Anda Tidak Ditemukan");
   } catch (error) {
     /* Handling Errors */
     errorHandling(error);

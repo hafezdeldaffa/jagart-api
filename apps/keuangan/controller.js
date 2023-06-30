@@ -228,9 +228,6 @@ exports.getKeuanganByCategory = async (req, res, next) => {
     /* Find Warga */
     const warga = await Warga.find({ email: email }).select("tokenRT");
 
-    // const categoryCapitalize =
-    //   category.charAt(0).toUpperCase() + category.slice(1);
-
     /* Find Keuangan */
     const keuangan = await Keuangan.find({
       tokenRT: warga[0].tokenRT,

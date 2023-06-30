@@ -188,21 +188,14 @@ exports.deleteLaporan = async (req, res, next) => {
 
     const warga = await Warga.findOne({ email: email });
 
-    const laporan = await Laporan.findById(id);
+    const laporan = await Laporan.findOneAndDelete({
+      _id: id,
+      tokenWarga: warga._id,
+    });
 
     if (!laporan) {
-      errorResponse(404, "Data Laporan tidak ditemukan", res);
+      errorResponse(404, "Data laporan tidak ditemukan", res);
     }
-
-    if (laporan.tokenWarga !== warga._id) {
-      errorResponse(
-        401,
-        "Anda tidak memiliki akses untuk menghapus data ini",
-        res
-      );
-    }
-
-    await Laporan.findByIdAndDelete(id);
 
     res.status(200).json({
       message: `Data Laporan dengan id: ${id} Berhasil Dihapus`,

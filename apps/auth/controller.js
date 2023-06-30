@@ -76,7 +76,7 @@ exports.signUp = async (req, res, next) => {
             "RT anda sudah memiliki ketua RT, harap mendaftar dengan role Warga",
         });
       }
-    } else {
+
       if (tokenRT) {
         const dataRT = await RT.findById(tokenRT);
         dataRT.member.push(warga);

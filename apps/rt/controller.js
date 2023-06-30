@@ -14,6 +14,8 @@ exports.createRT = async (req, res, next) => {
       throw err;
     }
 
+    let ketuaRTVal = null;
+
     /* Get data from request body */
     const {
       nomorRT,
@@ -24,7 +26,12 @@ exports.createRT = async (req, res, next) => {
       city,
       zipcode,
       member,
+      ketuaRT,
     } = req.body;
+
+    if (ketuaRT) {
+      ketuaRTVal = ketuaRT;
+    }
 
     /* Create new RT */
     const newRT = new RT({
@@ -34,8 +41,9 @@ exports.createRT = async (req, res, next) => {
       address: address,
       province: province,
       city: city,
-      zipcode: zipcode,
+      zipCode: zipcode,
       member: member,
+      ketuaRT: ketuaRTVal,
     });
 
     /* Save to db */
@@ -99,7 +107,7 @@ exports.editRT = async (req, res, next) => {
     });
 
     /* Send response */
-    res.status(201).json({
+    res.status(200).json({
       message: "RT Anda Berhasil Diubah",
       data: updatedRT,
     });
